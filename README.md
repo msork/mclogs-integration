@@ -1,3 +1,7 @@
+# My fork's additions
+I am planning to add Sponge API support (18.0.0 and up) which includes Minecraft 1.21.11 and up to the mclo.gs mod. If it works I hope to merge with the original repo to add Sponge support and become the Sponge maintainer.
+
+# Original README
 <div align="center">
     <a href="https://mclo.gs">
         <img src="https://mclo.gs/img/logo.svg" alt="Logo" width="260">
