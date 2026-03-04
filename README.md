@@ -1,6 +1,53 @@
 # My fork's additions
 I am planning to add Sponge API support (18.0.0 and up) which includes Minecraft 1.21.11 and up to the mclo.gs mod. If it works I hope to merge with the original repo to add Sponge support and become the Sponge maintainer.
 
+### Setting up the Development Environment
+1. Clone the repository
+2. Import the project in your IDE (IntelliJ IDEA is recommended)
+3. Run `./gradlew :forge:genIntellijRuns :neoforge:createLaunchScripts` to generate the Forge/NeoForge runs
+
+### Modules
+
+| Module     | Description                                                                    | Parent Module |
+|------------|--------------------------------------------------------------------------------|---------------|
+| common     | Code shared between all platforms                                              |               |
+| common-mc  | Code shared between all platforms that provide access to the Minecraft classes | common        |
+| adventure  | Code shared between all platforms that use the adventure component library     | common        |
+| bukkit     | Bukkit plugin implementation                                                   | adventure     |
+| sponge     | Sponge plugin implementation                                                   | adventure     |
+| bungeecord | BungeeCord plugin implementation                                               | adventure     |
+| velocity   | Velocity plugin implementation                                                 | adventure     |
+| forge      | Forge mod implementation                                                       | common-mc     |
+| fabric     | Fabric mod implementation                                                      | common-mc     |
+| neoforge   | NeoForge mod implementation                                                    | common-mc     |
+
+### Building
+To build all modules run `./gradlew buildAll`. Unless specified below all other modules use the `build` task.
+
+Modules with special build task:
+
+| Module     | Task        |
+|------------|-------------|
+| bukkit     | `shadowJar` |
+| sponge     | `shadowJar` |
+| bungeecord | `shadowJar` |
+| velocity   | `shadowJar` |
+| forge      | `jarJar`    |
+
+### Running in development environments
+If you're using IntelliJ IDEA you should already see run configurations for most platforms.
+For other platforms or other IDEs run their respective gradle tasks:
+
+| Platform   | Client Task                     | Server Task                           |
+|------------|---------------------------------|---------------------------------------|
+| Bukkit     |                                 | `./gradlew :bukkit:runServer`         |
+| BungeeCord |                                 | `./gradlew :bungeecord:runBungeeCord` |
+| Velocity   |                                 | `./gradlew :velocity:runVelocity`     |
+| Forge      | `./gradlew :forge:Client`       | `./gradlew :forge:Server`             |
+| Fabric     | `./gradlew :fabric:runClient`   | `./gradlew :fabric:runServer`         |
+| NeoForge   | `./gradlew :neoforge:runClient` | `./gradlew :neoforge:runServer`       |
+
+
 # Original README
 <div align="center">
     <a href="https://mclo.gs">

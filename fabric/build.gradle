@@ -10,6 +10,7 @@ plugins {
 repositories {
     mavenCentral()
     maven repos.centralSnapshots
+    maven { url = 'https://maven.parchmentmc.org' }
 }
 
 dependencies {

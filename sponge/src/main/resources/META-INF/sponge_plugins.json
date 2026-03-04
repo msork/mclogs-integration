@@ -1,0 +1,35 @@
+{
+  "loader": {
+    "name": "java_plain",
+    "version": "1.0"
+  },
+  "license": "MIT",
+  "plugins": [
+    {
+      "id": "mclogs",
+      "name": "mclo.gs",
+      "version": "1.21.11",
+      "entrypoint": "gs.mclo.MclogsSpongePlugin",
+      "description": "Upload your logs to mclo.gs with a single command to analyze or share them.",
+      "links": {
+        "homepage": "https://mclo.gs"
+      },
+      "contributors": [
+        {
+          "name": "Aternos GmbH",
+          "description": "Developer"
+        },
+        {
+          "name": "Maxim Sorkin (msork)",
+          "description": "Maintainer"
+        }
+      ],
+      "dependencies": [
+        {
+          "id": "spongeapi",
+          "version": "18.0.0"
+        }
+      ]
+    }
+  ]
+}
