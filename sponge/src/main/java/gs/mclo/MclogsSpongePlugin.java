@@ -17,12 +17,14 @@ import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.Server;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 
 @Plugin("mclogs")
 public class MclogsSpongePlugin {
     private static PluginContainer PLUGIN_CONTAINER;
     private static Path CONFIG_DIR;
+
     private final Logger logger;
 
     protected final MclogsCommon mclogsCommon = new MclogsCommon();
@@ -78,5 +80,29 @@ public class MclogsSpongePlugin {
         }
 
         event.register(pluginContainer(), new SpongeBrigadierCommand(dispatcher, context, componentFactory), "mclogs", "mclo");
+    }
+
+    @Listener
+    public void onDisable(StoppingEngineEvent<Server> event) {
+        closeNightConfigFileConfig();
+    }
+
+    private void closeNightConfigFileConfig() {
+        try {
+            Field f = mclogsCommon.getClass().getDeclaredField("configFile");
+            f.setAccessible(true);
+
+            Object configFile = f.get(mclogsCommon);
+            if (configFile instanceof AutoCloseable closeable) {
+                closeable.close();
+                logger.info("Closed NightConfig FileConfig (stops autosave/autoreload threads).");
+            } else if (configFile != null) {
+                logger.warn("configFile exists but is not AutoCloseable: {}" + configFile.getClass().getName());
+            }
+        } catch (NoSuchFieldException e) {
+            logger.warn("Could not find MclogsCommon.configFile field to close (shutdown may hang).");
+        } catch (Throwable t) {
+            logger.error("Failed to close NightConfig FileConfig during shutdown.", t);
+        }
     }
 }
