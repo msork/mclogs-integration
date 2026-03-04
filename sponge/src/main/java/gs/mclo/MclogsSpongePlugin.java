@@ -67,11 +67,6 @@ public class MclogsSpongePlugin {
     }
 
     @Listener
-    public void onDisable(StoppingEngineEvent<Server> event) {
-        mclogsCommon.shutdown();
-    }
-
-    @Listener
     public void onRegisterCommands(RegisterCommandEvent<Command.Raw> event) {
         // If init order is different than expected, make sure to have dispatcher/context ready
         if (dispatcher == null) {
