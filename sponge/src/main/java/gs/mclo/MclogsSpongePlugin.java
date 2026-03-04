@@ -32,6 +32,8 @@ public class MclogsSpongePlugin {
     protected SpongeBuildContext context;
     protected AdventureComponentFactory componentFactory;
 
+    private boolean initialized = false;
+
     @Inject
     public MclogsSpongePlugin(
             final PluginContainer container,
@@ -57,8 +59,10 @@ public class MclogsSpongePlugin {
         return CONFIG_DIR;
     }
 
-    @Listener
-    public void onEnable(StartedEngineEvent<Server> event) {
+    private void initIfNeeded() {
+        if (initialized) return;
+        initialized = true;
+
         mclogsCommon.init();
 
         dispatcher = new CommandDispatcher<>();
@@ -69,40 +73,25 @@ public class MclogsSpongePlugin {
     }
 
     @Listener
-    public void onRegisterCommands(RegisterCommandEvent<Command.Raw> event) {
-        // If init order is different than expected, make sure to have dispatcher/context ready
-        if (dispatcher == null) {
-            mclogsCommon.init();
-            dispatcher = new CommandDispatcher<>();
-            componentFactory = new AdventureComponentFactory();
-            context = new SpongeBuildContext(this);
-            mclogsCommon.registerCommands(dispatcher, context, componentFactory);
-        }
+    public void onEnable(StartedEngineEvent<Server> event) {
+        initIfNeeded();
+    }
 
+    @Listener
+    public void onRegisterCommands(RegisterCommandEvent<Command.Raw> event) {
+        initIfNeeded();
         event.register(pluginContainer(), new SpongeBrigadierCommand(dispatcher, context, componentFactory), "mclogs", "mclo");
     }
 
     @Listener
     public void onDisable(StoppingEngineEvent<Server> event) {
-        closeNightConfigFileConfig();
-    }
-
-    private void closeNightConfigFileConfig() {
         try {
-            Field f = mclogsCommon.getClass().getDeclaredField("configFile");
-            f.setAccessible(true);
-
-            Object configFile = f.get(mclogsCommon);
-            if (configFile instanceof AutoCloseable closeable) {
-                closeable.close();
-                logger.info("Closed NightConfig FileConfig (stops autosave/autoreload threads).");
-            } else if (configFile != null) {
-                logger.warn("configFile exists but is not AutoCloseable: {}" + configFile.getClass().getName());
+            if (mclogsCommon.configFile != null) {
+                mclogsCommon.configFile.save();
+                mclogsCommon.configFile.close();
             }
-        } catch (NoSuchFieldException e) {
-            logger.warn("Could not find MclogsCommon.configFile field to close (shutdown may hang).");
-        } catch (Throwable t) {
-            logger.error("Failed to close NightConfig FileConfig during shutdown.", t);
+        } catch (Exception e) {
+            logger.warn("Failed to close config file cleanly", e);
         }
     }
 }
